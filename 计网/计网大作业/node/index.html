@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html>
+ <head>
+ <meta name="viewport" content="width=device-width,initial-scale=1.0">
+ <title>我们的坟墓我们的家</title>
+ <style>
+ /* 在原有样式基础上添加以下响应式样式 */
+@media (max-width: 768px) {
+  /* 调整用户列表为可折叠模式 */
+  .user-list-container {
+    width: 100%;
+    max-width: 280px;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+  }
+  
+  .user-list-container.show {
+    transform: translateX(0);
+  }
+  
+  /* 主内容区自适应 */
+  .main-content {
+    margin-left: 0;
+    padding: 0 10px;
+  }
+  
+  /* 添加用户列表切换按钮 */
+  .toggle-user-list {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    width: 40px;
+    height: 40px;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    z-index: 101;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  
+  /* 调整消息样式 */
+  #messages > li {
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .message-container {
+    flex-wrap: wrap;
+  }
+  
+  .message-time {
+    width: 100%;
+    margin-left: 40px; /* 与头像对齐 */
+    margin-top: 4px;
+  }
+  
+  /* 调整输入框和按钮 */
+  #form {
+    padding: 0.25rem 0.5rem;
+  }
+  
+  #input {
+    padding: 0 0.75rem;
+  }
+  
+  #form > button {
+    padding: 0 0.75rem;
+  }
+  
+  /* 调整昵称和按钮位置 */
+  #nicknameDisplay, #changeNickname {
+    top: 10px;
+  }
+  
+  #changeNickname {
+    right: 10px;
+  }
+  
+  #nicknameDisplay {
+    right: 90px;
+  }
+  
+  /* 调整标题 */
+  h1 {
+    margin-top: 60px;
+    font-size: 1.5rem;
+  }
+  
+  h2 {
+    font-size: 1.2rem;
+  }
+}
+
+  h1 {
+    text-align: center;
+    margin-top:50px;
+  }
+  h2{
+    text-align:center;
+    margin-top:5px;
+  }
+ body { margin: 0; padding-bottom: 3rem; font-family: -apple-system, 
+BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+ #form { background: rgba(0, 0, 0, 0.15); padding: 0.25rem; position: fixed; 
+bottom: 0; left: 0; right: 0; display: flex; height: 3rem; box-sizing: border-box; backdrop-filter: blur(10px); }
+ #input { border: none; padding: 0 1rem; flex-grow: 1; border-radius: 2rem; 
+margin: 0.25rem; }
+ #input:focus { outline: none; }
+ #form > button { background: #333; border: none; padding: 0 1rem; margin: 
+0.25rem; border-radius: 3px; outline: none; color: #fff; }
+ #messages { list-style-type: none; margin: 0; padding: 0; }
+ #messages > li { padding: 0.5rem 1rem; }
+ #messages > li:nth-child(odd) { background: #efefef; }
+  .nickname {
+   color: #09d3fb; 
+   font-weight: bold;
+   margin-right: 8px;
+ }
+ 
+/*标题容器*/
+.title-container {
+    position: relative; /* 作为子元素的定位参考 */
+    text-align: center; 
+    padding: 0 200px; /* 右侧预留足够空间给昵称显示 */
+  }
+  
+/*显示昵称*/
+#nicknameDisplay {
+  /* 相对于标题容器定位 */
+    position: absolute; 
+    top: 50%; /* 垂直居中对齐标题 */
+    right: 0; /* 靠右对齐 */
+    transform: translateY(-50%); /* 精确垂直居中 */
+  top: 30px;
+  right: 120px; /* 距离右侧的距离，确保在按钮左侧 */
+  padding: 5px 10px;
+  color: #333;
+  font-weight: bold;
+  background: #f0f0f0;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+}
+
+/*头像样式*/
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%; /* 圆形头像 */
+  margin-right: 8px; /* 与昵称保持距离 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgb(64, 193, 237);
+  font-weight: bold;
+  font-size: 16px;
+}
+
+#currentNickname {
+  position: fixed;
+  top: 30px;
+  right: 120px; /* 位于更改昵称按钮左侧 */
+  color: #333;
+  font-weight: bold;
+  padding: 5px 0;
+}
+
+/* 更改昵称按钮样式 */
+#changeNickname {
+ position: absolute; /* 相对于标题容器定位 */
+  top: 50%; /* 垂直居中 */
+  right: 0; /* 靠右对齐 */
+  transform: translateY(-50%); /* 精确垂直居中 */
+  top: 30px;
+  right: 10px;
+  padding: 5px 10px;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+
+.system-message {
+  text-align: center; /* 文本居中 */ 
+}
+.message-time {
+  color: #666; /* 灰色时间 */
+  font-size: 0.8em; /* 稍小字体 */
+  margin-left: auto; /* 自动左外边距，实现右对齐 */
+  white-space: nowrap; /* 防止时间换行 */
+}
+
+/* 消息容器*/
+.message-container {
+  display: flex;
+  align-items: center; /* 垂直居中对齐所有元素 */
+  width: 100%;
+  padding: 4px 0;
+}
+
+/* 补充用户列表样式 */
+.user-list-container {
+  position: fixed;
+  left: 0;
+  top: 50px;
+  width: 220px;
+   max-height: calc(100% - 5rem); /* 减去底部搜索栏高度 */
+  height: auto; /* 改为自动高度 */
+  background: #f8f9fa;
+  border-right: 1px solid #ddd;
+  overflow-y: auto;
+  padding-top: 20px;
+  box-sizing: border-box;
+  z-index: 100; 
+}
+
+.user-list-title {
+  text-align: center;
+  margin: 10px 0;
+  font-size: 16px;
+  color: #333;
+  padding: 0 10px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+}
+
+.user-item {
+  padding: 8px 15px;
+  display: flex;
+  align-items: center;
+  cursor: default; 
+}
+
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.status-online {
+  background: #2ecc71;
+}
+
+.status-offline {
+  background: #95a5a6;
+}
+
+/* 调整主内容区位置 */
+.main-content {
+  margin-left: 220px; /* 与用户列表宽度一致 */
+  padding-bottom: 4rem;
+}
+ </style>
+ </head>
+ <div class="user-list-container">
+  <div class="user-list-title">在线用户</div>
+  <div id="onlineUsers"></div>
+  <div class="user-list-title" style="margin-top: 15px;">离线用户</div>
+  <div id="offlineUsers"></div>
+</div>
+<button class="toggle-user-list">☰</button>
+
+<div class="main-content">
+<h1>欢迎来到聊天界面！</h1>
+<h2>请尽情交谈！</h2>
+<div id="currentNickname"></div>
+<button id="changeNickname">更改昵称</button>
+ <ul id="messages"></ul>
+ <form id="form" action="">
+ <input id="input" autocomplete="off" /><button>Send</button>
+ </form>
+ </div>
+ <script src="/socket.io/socket.io.js"></script>
+<script>
+
+
+    // 生成或读取设备唯一标识（UUID）
+  let deviceId = localStorage.getItem('deviceId');
+  if (!deviceId) {
+   const min = 10000000; // 最小8位数字
+  const max = 99999999; // 最大8位数字
+  const randomNum = Math.floor(Math.random() * (max - min + 1)) + min;
+  deviceId = randomNum.toString(); // 转换为字符串
+    localStorage.setItem('deviceId', deviceId);
+  }
+
+  // 读取或设置用户昵称
+let nickname = localStorage.getItem('nickname');
+    while (!nickname || nickname.trim() === '') {
+      nickname = prompt('请输入您的昵称：').trim();
+      if (!nickname) {
+        alert('昵称不能为空，请重新输入！');
+      }
+    }
+    localStorage.setItem('nickname', nickname); // 保存昵称到本地存储
+
+
+    // 渲染右上角昵称显示
+function renderNickname() {
+  // 先移除已存在的显示元素（避免重复）
+  const existing = document.getElementById('nicknameDisplay');
+  if (existing) existing.remove();
+
+// 创建新的容器元素，包含头像和昵称
+  const container = document.createElement('div');
+  container.id = 'nicknameDisplay';
+  container.style.display = 'flex';
+  container.style.alignItems = 'center';
+  
+ // 创建头像
+  const avatar = document.createElement('div');
+  const firstChar = getFirstChar(nickname);
+  const avatarColor = getAvatarColor(deviceId);
+  avatar.className = 'avatar';
+  avatar.style.backgroundColor = avatarColor;
+  avatar.textContent = firstChar;
+  
+  // 创建昵称文本
+  const nicknameText = document.createElement('span');
+  nicknameText.textContent = nickname;
+  nicknameText.style.marginLeft = '8px'; // 头像和昵称之间的间距
+  
+  // 组装容器
+  container.appendChild(avatar);
+  container.appendChild(nicknameText);
+  document.body.appendChild(container); // 添加到页面
+}
+
+  //更改昵称
+    document.getElementById('changeNickname').addEventListener('click', () => {
+  const newNickname = prompt('请输入新的昵称：', nickname).trim();
+  if (newNickname && newNickname !== nickname) {
+    const oldNickname = nickname; // 保存旧昵称
+    nickname = newNickname;
+    localStorage.setItem('nickname', nickname);
+    alert('昵称已更新为：' + nickname);
+     document.getElementById('currentNickname').textContent = ` ${nickname}`;
+     renderNickname();
+    // 向服务器发送昵称修改通知
+    socket.emit('nickname changed', {
+      oldNickname: oldNickname,
+      newNickname: newNickname,
+      deviceId: deviceId // 用于标识唯一用户
+    });
+  } else if (!newNickname) {
+    alert('昵称不能为空！');
+  }
+});
+
+renderNickname();
+  // 获取设备基础信息（浏览器/系统）
+  const deviceInfo = {
+    deviceId: deviceId,
+    nickname:nickname,
+    userAgent: navigator.userAgent, // 浏览器标识
+    platform: navigator.platform    // 系统平台
+  };
+
+// 生成头像背景色
+function getAvatarColor(str) {
+  // 根据字符串生成哈希值
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  // 转换哈希值为RGB颜色
+  const c = (hash & 0x00FFFFFF)
+    .toString(16)
+    .toUpperCase();
+  // 补全6位
+  return '#' + '00000'.substring(0, 6 - c.length) + c;
+}
+// 获取昵称首字符
+function getFirstChar(nickname) {
+  if (!nickname) return '';
+  // 中文取第一个字符，英文取首字母大写
+  return nickname.charAt(0).toUpperCase();
+}
+
+
+
+
+ const socket = io();
+ const form = document.getElementById('form');
+ const input = document.getElementById('input');
+ const messages = document.getElementById('messages');
+
+ socket.on('connect', () => {
+    socket.emit('user connected', {
+      nickname: nickname
+    });
+  });
+ form.addEventListener('submit', (e) => {
+ e.preventDefault();
+ if (input.value) // 发送消息时携带deviceId
+      socket.emit('chat message', 
+      {
+        text: input.value,
+        deviceId: deviceId ,
+        nickname:nickname
+      });
+      input.value = '';
+ });
+
+ socket.on('chat message', (msg) => {
+    const item = document.createElement('li');
+    if (msg.type === 'system') {
+      // 系统消息样式（灰色、斜体）
+        item.className = 'system-message'; // 添加类名
+      item.innerHTML = `
+        <span class="system-time">[${msg.time}]</span>
+        <span class="system-content">${msg.content}</span>
+      `;
+      item.style.color = '#666';
+      item.style.fontStyle = 'italic';
+    } else {
+      // 普通消息样式（头像+昵称+内容）
+      const avatarColor = getAvatarColor(msg.deviceId); // 基于deviceId生成固定颜色
+const firstChar = getFirstChar(msg.nickname);
+     item.innerHTML = `
+      <div class="message-container">
+         <div class="avatar" style="background-color: ${avatarColor}">${firstChar}</div>
+        <span class="nickname">${msg.nickname}</span>
+        <span class="message-text">(${msg.deviceId})[${msg.ip}]: ${msg.text}</span>
+        <span class="message-time">${msg.time}</span>
+      </div>
+    `;
+  }
+    messages.appendChild(item);
+    window.scrollTo(0, document.body.scrollHeight);
+  });
+
+
+// 用户列表相关变量
+let userList = {
+  online: [],
+  offline: []
+};
+// 初始化用户列表监听
+function initUserSystem() {
+  // 监听用户列表更新
+  socket.on('update user list', (updatedList) => {
+    userList = updatedList;
+    renderUserLists();
+  });
+  // 发送当前用户信息到服务器
+  socket.emit('register user', {
+    deviceId: deviceId,
+    nickname: nickname,
+    status: 'online'
+  });
+}
+// 渲染用户列表
+function renderUserLists() {
+  // 渲染在线用户前先去重
+const uniqueOnlineUsers = Array.from(new Map(
+  userList.online.map(user => [user.deviceId, user])
+).values());
+// 渲染离线用户前先去重
+const uniqueOfflineUsers = Array.from(new Map(
+  userList.offline.map(user => [user.deviceId, user])
+).values());
+  const onlineContainer = document.getElementById('onlineUsers');
+  const offlineContainer = document.getElementById('offlineUsers');
+  onlineContainer.innerHTML = '';
+  offlineContainer.innerHTML = '';
+  // 渲染在线用户
+  userList.online.forEach(user => {
+    const item = document.createElement('div');
+    item.className = 'user-item';
+    item.innerHTML = `
+      <div class="status-indicator status-online"></div>
+      <span>${user.nickname}</span>
+    `;
+    onlineContainer.appendChild(item);
+  });
+  // 渲染离线用户
+  userList.offline.forEach(user => {
+    if (user.deviceId === deviceId) return; // 跳过自己
+    const item = document.createElement('div');
+    item.className = 'user-item';
+    item.innerHTML = `
+      <div class="status-indicator status-offline"></div>
+      <span>${user.nickname}</span>
+    `;
+    offlineContainer.appendChild(item);
+  });
+}
+// 移动端用户列表切换
+  const toggleBtn = document.querySelector('.toggle-user-list');
+  const userListContainer = document.querySelector('.user-list-container');
+  toggleBtn.addEventListener('click', () => {
+    userListContainer.classList.toggle('show');
+  });
+  // 点击消息区域自动隐藏用户列表（移动端）
+  const mainContent = document.querySelector('.main-content');
+  mainContent.addEventListener('click', () => {
+    if (window.innerWidth <= 768 && userListContainer.classList.contains('show')) {
+      userListContainer.classList.remove('show');
+    }
+  });
+// 页面加载完成后初始化用户系统
+window.addEventListener('load', () => {
+  initUserSystem();
+});
+</script>
+ </body>
+</html>

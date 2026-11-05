@@ -1,0 +1,43 @@
+#include <iostream>
+using namespace std;
+
+struct GCP {
+    char strName[64];
+    float x, y, z;
+};
+int FindNest(GCP* p, int n, float x, float y, float z) {
+    float mid, dis;
+    int i, fid = 0;
+    mid = (p[0].x - x) * (p[0].x - x) + (p[0].y - y) * (p[0].y - y) + (p[0].z - z) * (p[0].z - z);
+    for (i = 1; i < n; i++) {
+        dis = (p[i].x - x) * (p[i].x - x) + (p[i].y - y) * (p[i].y - y) + (p[i].z - z) * (p[i].z - z);
+        if (dis < mid) {
+            mid = dis;
+            fid = i;
+        }
+    }
+    return fid;
+}
+void main()
+{
+    GCP* p;
+    int i, n;
+    float x, y, z;
+    FILE* f;
+    f = fopen("d:/test.txt", "rt");
+    if (!f) {
+        cout << "can not open file."; return;
+        fscanf(f, "%d", &n);
+        p = new GCP[n];
+        for (i = 0; i < n; i++) {
+            fscanf(f, "%s%f%f%f", p[i].strName, &p[i].x, &p[i].y, &p[i].z);
+        }
+        fclose(f);
+        cout << "please int xyz";
+        cin >> x >> y >> z;
+        int fd = FindNest(p, n, x, y, z);
+        cout << "find info:\n";
+        cout << p[fd].strName << " " << p[fd].x << " " << p[fd].y << " " << p[fd].z << "\n";
+        delete[]p;
+    }
+}

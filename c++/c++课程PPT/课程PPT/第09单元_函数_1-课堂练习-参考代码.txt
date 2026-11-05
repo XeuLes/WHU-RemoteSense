@@ -1,0 +1,108 @@
+//1. 编程实现三个函数 mymax(a,b) ; mymin(a,b) ；myabs(a)
+double mymax(double a,double b){
+    return (a>b?a:b);
+}
+double mymin(double a,double b){
+    return (a<b?a:b);
+}
+double myabs(double a){
+    return (a<0?-a:a);
+}
+
+//2.编写求圆周长的函数、求圆面积的函数。
+double Perimeter(double r){
+    return 2*3.14159265*r;
+} 
+double Area(double r){
+    return 3.14159265*r*r;
+}
+
+//3.编写求距离的函数 Dist( x0,y0,x1,y1 ）
+double Dist( double x0,double y0,double x1,double y1){
+    return sqrt( (x0-x1)*(x0-x1)+(y0-y1)*(y0-y1) );
+}
+
+// 4.编写求两直线交点的函数Cross（x0,y0,x1,y1,x2,y2,x3,y3,&x,&y ）
+bool Cross( double x0,double y0,double x1,double y1,double x2,double y2,double x3,double y3,double &x,double &y ){    
+    double dx0 = x1 - x0;  double dy0 = y1 - y0;
+    double dx2 = x3 - x2;  double dy2 = y3 - y2;
+    double tmp1 = dx2 * dy0 - dx0 * dy2;
+    if ((tmp1 < 0 ? -tmp1 : tmp1) < 1.0e-34)  return false; // 平行或者相同    
+    x = (dx2*(dx0*(y2 - y0) + dy0 * x0) - dx0 * dy2*x2) / tmp1;
+    y = (dy0*(dy2*(x0 - x2) + dx2 * y2) - dx0 * dy2*y0) / tmp1;
+    return true;
+}
+
+// 5. 编写函数实现，输入月日时分秒，输出是本年度第几秒，以1月1日0时0分0秒为起点，须考虑大小月（2月28天）
+int GetAllSecend(int mo,int da,int ho,int mi,int se){
+    if ( mo<1||mo>12 ||da<1||da>31||ho<0||ho>=24||mi<0||mi>59||se<0||se>59 ) return -1; //  无效
+    int md[12]={ 31,28,31,30,31,30,31,31,30,31,30,31 };    
+    return ( ( ( md[mo-1] + (da-1) )*24 + ho )*60 + mi )*60 + se;
+}
+
+//6. 编写函数实现判断一个数是否是质数（100以内）
+bool IsPrime(int n){
+    if ( n<1 || n>100 ) return false;
+    if ( n<4 ) return true; 
+    for (int i=2;i<n;i++ ){
+        if ( (n%i)==0 ) return false;
+    }
+    return true;
+}
+
+//7, 编写函数实现求三角形面积 TriArea(x0,y0,x1,y1,x2,y2)
+double TriArea( double x0,double y0,double x1,double y1,double x2,double y2 ){
+    // 用海伦公式
+    double a = Dist(x0,y0,x1,y1);
+    double b = Dist(x0,y0,x2,y2);
+    double c = Dist(x2,y2,x1,y1);
+    if (a+b>c && a+c>b && b+c>a ){        
+        double s = (a+b+c)/2.0;
+        return sqrt(s*(s-a)*(s-b)*(s-c));
+    }
+    return 0; 
+}
+ 
+//8, 编写函数实现判断一个点是否在三角形内 , 用 “叉乘同符号”判断
+bool PtInTri(double p0x, double p0y, double p1x, double p1y, double p2x, double p2y, double x,double y){
+    double crosP01t = (p1x - p0x)*(y - p0y) - (p1y - p0y)*(x - p0x);
+    double crosP12t = (p2x - p1x)*(y - p1y) - (p2y - p1y)*(x - p1x);
+    double crosP20t = (p0x - p2x)*(y - p2y) - (p0y - p2y)*(x - p2x);
+    return ((crosP01t >= 0 && crosP12t >= 0 && crosP20t >= 0) || (crosP01t <= 0 && crosP12t <= 0 && crosP20t <= 0));
+}
+
+
+
+
+/// 验证
+int main()
+{
+   cout<<mymax(1,22)<<"\n";
+   cout<<mymin(1,22)<<"\n";
+   cout<<myabs(-22)<<"\n";
+   cout<<Perimeter(1)<<"\n";
+   cout<<Area(1)<<"\n";
+   cout<<Dist(1,1,5,5)<<"\n";
+
+   double x,y;
+   Cross( 1,1,5,5,2,9,4,8,x,y );
+   cout<<x<<","<<y <<"\n";
+
+   cout<<GetAllSecend(2,1,0,0,0)<<"\n";
+
+   for( int i=0;i<100;i++ ){
+      if ( IsPrime(i) ) 
+        cout<< i <<" ";
+   }
+   cout<<"\n";
+
+   cout<<TriArea(1,1,5,5,2,9)<<"\n";
+
+   if ( PtInTri(1,1,5,5,2,9,3,4) ){
+       cout<<"in";
+   }else 
+       cout<<"out";
+
+
+   system("pause");
+}

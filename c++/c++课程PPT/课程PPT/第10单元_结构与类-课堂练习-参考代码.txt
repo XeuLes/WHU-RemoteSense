@@ -1,0 +1,132 @@
+// 1.求距离
+struct PT2D {
+    float x, y;
+};
+double GetDis(PT2D p1, PT2D p2) {
+    return sqrt((p1.x - p2.x)*(p1.x - p2.x) + 
+        (p1.y - p2.y)*(p1.y - p2.y));
+}
+//2. 找最近点
+PT2D GetNearest(PT2D *pA, int n, PT2D pt) {
+    double miDis = GetDis(pt, pA[0]);
+    PT2D ret = pA[0];
+    for (int i = 1; i < n; i++) {
+        double curDis = GetDis(pt, pA[i]);
+        if (miDis > curDis) {
+            ret = pA[i];
+        }
+    }
+    return ret;
+}
+
+//3.通过学号查找学生
+struct STUD{
+    char name[32];
+    int id;
+    float sc[4];
+};
+int FindById( STUD *pS,int n,int id ){
+    for( int i=0;i<n;i++,pS++ ){
+        if ( pS->id==id ){
+            return i; // 找到就直接返回序号
+        }
+    }
+    return -1; // 没有找到就返回 -1
+}
+
+//4. 通过书名查找书
+struct BOOK{
+    char bkTitle[128];
+    char bkAuthor[16];
+    float bkPrice;
+};
+
+int FindByAnthor( BOOK *pBk,int n,const char *strAuthor ){
+    for( int i=0;i<n;i++,pBk++ ){
+        if ( strcmp(pBk->bkAuthor,strAuthor)==0 ){ // 字符串比较必须用 strcmp
+            return i; // 找到就直接返回序号
+        }
+    }
+    return -1; // 没有找到就返回 -1
+}
+
+
+
+///  在 main() 函数中验证
+void main()
+{
+    // 1， 2 测试验证，可以自己输入数据
+    PT2D pt = { 99,21 };    
+    PT2D pts[3];
+    pts[0].x = 1;
+    pts[0].y = 1;    
+    pts[1].x = 100;
+    pts[1].y = 20;   
+    pts[2].x = 500;
+    pts[2].y = 1000;        
+    PT2D t = GetNearest(pts, 3, pt);
+	cout << t.x << " " << t.y <<"\n";
+
+    // 3. 测试验证，可以自己输入数据
+    STUD stu[100];
+
+    stu[0].id = 20210101;
+    strcpy( stu[0].name,"张三" );
+    stu[0].sc[0]=81; 
+    stu[0].sc[1]=92; 
+    stu[0].sc[2]=83; 
+    stu[0].sc[3]=94;
+
+    stu[1].id = 20210102;
+    strcpy( stu[1].name,"李四" );
+    stu[1].sc[0]=85; 
+    stu[1].sc[1]=96; 
+    stu[1].sc[2]=87; 
+    stu[1].sc[3]=92;
+
+    stu[2].id = 20210103;
+    strcpy( stu[2].name,"王五" );
+    stu[2].sc[0]=84; 
+    stu[2].sc[1]=93; 
+    stu[2].sc[2]=82; 
+    stu[2].sc[3]=91;
+    
+    int fD = FindById( stu,3,20210102 );
+    if ( fD==-1 ){
+        cout<<"没有找到学生\n";
+    }else{
+        cout<<"找到学生:\n";
+        cout<<"姓名："<<stu[fD].name<<"\n";
+        cout<<"姓名："<<stu[fD].id  <<"\n";
+        cout<<"成绩1："<<stu[fD].sc[0]<<"\n";
+        cout<<"成绩2："<<stu[fD].sc[1]<<"\n";
+        cout<<"成绩3："<<stu[fD].sc[2]<<"\n";
+        cout<<"成绩4："<<stu[fD].sc[3]<<"\n";        
+    }
+    
+    // 3. 测试验证，可以自己输入数据
+    BOOK bks[100];
+    strcpy( bks[0].bkTitle,"资本论" );
+    strcpy( bks[0].bkAuthor,"马克思" );
+    bks[0].bkPrice = 100;
+
+    strcpy( bks[1].bkTitle,"计算机原理与编程基础" );
+    strcpy( bks[1].bkAuthor,"段延松" );
+    bks[1].bkPrice = 25;
+
+    strcpy( bks[2].bkTitle,"英语" );
+    strcpy( bks[2].bkAuthor,"欧拉" );
+    bks[2].bkPrice = 50;
+
+    int fB = FindByAnthor( bks,3,"马克思" );
+    if ( fB==-1 ){
+        cout<<"没有找到任何书籍";
+    }else{
+        cout<<"找到书信息:\n";
+        cout<<"书名："<<bks[fB].bkTitle<<"\n";
+        cout<<"作者："<<bks[fB].bkAuthor  <<"\n";
+        cout<<"价格："<<bks[fB].bkPrice<<"\n";
+    }
+
+    system("pause");
+}

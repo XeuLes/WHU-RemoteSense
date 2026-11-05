@@ -1,0 +1,196 @@
+// t95.cpp : 定义控制台应用程序的入口点。
+//
+
+#include "stdafx.h"
+#include "iostream"
+
+using namespace std;
+
+// 1) 输入数组大小n，然后动态分配内存，之后输入n个数给动态数组，找其中的众数输出，最后，释放动态内存。
+int main()
+{
+	int n;
+	cout << "please input n:";
+	cin >> n;
+	int *pV = new int[n];
+	int *pS = new int[n];
+	int i, j, k;
+	for (i = 0; i < n; i++) {
+		cin >> pV[i];
+	}
+	for (i = 0; i < n; i++) {
+		pS[i] = 0;
+		for (j = 0; j < n; j++) {
+			if (pV[j] == pV[i]) {
+				pS[i]++;
+			}
+		}
+	}
+	k = 0; int mx = pS[0];
+	for (i = 0; i < n; i++) {
+		if (pS[i] > mx) {
+			mx = pS[i];
+			k = i;
+		}
+	}
+	cout << "max is:" << pV[k];
+	delete pV;
+	delete pS;
+
+	system("pause");
+    return 0;
+}
+
+
+//2) 先输入字符串，然后将字符串扩展为双字节，也就是每个字母后都加空格（其中数字不加），最后将字符串输出。
+int main() {
+	char s1[1024];
+	cout << "please input string:";
+	gets_s(s1);
+	int i, sz;
+	for (i = 0; i < 1024; i++) {
+		if (s1[i] == 0) {
+			sz = i;
+			break;
+		}
+	}
+	char *p2 = new char[sz*2 +1];
+	char *ps, *pd;
+	for (i = 0,ps=s1,pd=p2; i < sz; i++,ps++) {
+		if (*ps >= '0' && *ps <= '9') {
+			*pd++ = *ps;
+		}
+		else {
+			*pd++ = *ps;
+			*pd++ = ' ';
+		}
+	}
+	*pd = 0;
+	cout << p2;
+	delete []p2;
+
+	system("pause");
+}
+
+//3) 编程实现多个字符串连接功能，具体要求：先定义字符指针，赋值为NULL，然后开始分别输入3个字符串，每次输入后将其链接到定义好的指针上，形成新字符串，最后输出结果，释放内存
+int main() 
+{
+	char *pRet = NULL;
+	int i,j,k,rsz = 0;
+
+	for ( i = 0; i < 3; i++) {
+		char s[256];
+		gets_s(s);
+		int nsz = strlen(s);
+		char *pOld = pRet;
+		pRet = new char[rsz + nsz +1];
+		for ( k = 0; k < rsz; k++) {
+			pRet[k] = pOld[k];
+		}
+		for ( j = 0; j < nsz; j++) {
+			pRet[rsz + j] = s[j];
+		}
+		pRet[rsz + j] = 0; rsz = rsz + nsz;
+		if (pOld != NULL) delete[]pOld;
+	}
+	cout << pRet;
+	if (pRet) delete[]pRet;
+
+	system("pause");
+}
+
+
+// 4、输入一个长字符串，然后输入一个长字符串中的某个存在的单词和新单词，并用新单词替换存在的单词（也就是word中的替换功能）。
+int main()
+{
+    char ss[1024];
+    cout<<"please input string1: ";
+    gets_s(ss);
+    
+    char s1[256],s2[256];
+    cout<<"please input find string: ";
+    gets_s(s1);
+
+    cout<<"please input new string: ";
+    gets_s(s2);
+
+    int sssz = strlen(ss);
+    int s1sz = strlen(s1);
+    int s2sz = strlen(s2);
+    
+    // 先找到有多少次出现字符串
+    char *pss,*p1,*p2; int i,findSum=0;
+    for( pss=ss;*pss!=0;pss++ ){
+        if (*pss==0) break;
+        for( p1=s1,i=0;i<s1sz;i++,p1++ ){
+            if ( *p1!=*(pss+i) ) break;
+        }
+        if ( i==s1sz ){ //找到字符串 
+            pss += s1sz;
+            findSum ++;
+            continue;
+        }
+    }
+    if ( findSum==0 ) return 0; // 没有找到字符串，无需处理
+
+    // 分配新内存
+    char *pN = new char[ sssz+(s2sz-s1sz)*findSum +1 ];
+    char *psn = pN;
+    for( pss=ss;*pss!=0;pss++ ){
+        if (*pss==0) break;
+        for( p1=s1,i=0;i<s1sz;i++,p1++ ){
+            if ( *p1!=*(pss+i) ) break;
+        }
+        if ( i==s1sz ){ //找到字符串 
+            pss += s1sz;
+            for( i=0,p2=s2;i<s2sz;i++ ){ // 将替换的字符串放入
+                *psn++ = *p2++;
+            }
+            continue;
+        }
+        *psn++ = *pss;
+    }
+    *psn = 0;
+    cout<<pN;
+    cout<<"\n";
+
+    delete[] pN;
+
+    system("pause");
+    return 0;
+}
+
+// 5、连续输入6个单词（字符串），空格隔开，然后按排序输入。例如输入姓名列表，然后排序输入。排序规则：比较首个不一样的字母大小。
+int main(){
+    int i,j;
+    char nam[6][128];
+    cout<<"please input 6 string:";    
+    for(i=0;i<6;i++){
+        cin>>nam[i];
+    }
+    char *p1,*p2; int cmp=0; // cmp 用来存放比较结果
+    for( i=0;i<6;i++){
+        for( j=i+1;j<6;j++ ){
+            
+            cmp = 0; // 开始比较
+            for( p1=nam[i],p2=nam[j]; *p1 && *p2 ;p1++,p2++ ){
+                if ( *p1!=*p2 ){
+                    cmp = *p1-*p2;
+                    break;
+                }
+            }
+            if ( cmp>0 ){ // 交换数据                
+                p1=nam[i]; p2=nam[j];
+                char tt[128];
+                strcpy( tt,p1 );
+                strcpy( p1,p2 );
+                strcpy( p2,tt );
+            }            
+        }
+    }
+    for(i=0;i<6;i++){
+        cout<<nam[i]<<"\n";
+    }
+    system("pause");
+}
+

@@ -1,0 +1,100 @@
+
+/// 第11单元_文件 课题练习参考代码
+
+//4. 设计控制点结构体
+struct XYZ{
+    char name[32];
+    float x,y,z;
+};
+//设计函数
+XYZ GetNearest( XYZ *pPt,int n,float x,float y){
+    int i;
+    double dis0,dis; 
+    XYZ ret = *pPt;
+    dis0 = sqrt( (pPt->x-x)*(pPt->x-x)+(pPt->y-y)*(pPt->y-y) );
+    for( i=0;i<n;i++,pPt++ ){
+        dis = sqrt( (pPt->x-x)*(pPt->x-x)+(pPt->y-y)*(pPt->y-y) );
+        if ( dis<dis0 ){
+            dis0 = dis;
+            ret = *pPt;
+        }
+    }
+    return ret;
+}
+
+void main(){
+
+    int i,n; char cc;
+
+    //1. 将ASCII为 32 ~ 126 的字符写入一个 文本
+    FILE* f1 = fopen( "d:/t1.txt","wt" );
+    if ( !f1 ) cout<<"open file fails.";
+    for( i=32;i<127;i++ ){
+        fprintf( f1,"%c",i );
+    }
+    fclose(f1);
+    
+
+    //2. 循环 将 1~ 100 的整数写入一个文本文件
+    FILE *f2 = fopen( "d:/t2.txt","wt" );
+    if ( !f2 ) cout<<"open file fails.";
+    for( i=1;i<101;i++  ){
+        fprintf( f2,"%d ",i );
+    }
+    fclose(f2);
+
+    // 3. 读入一个c语言源代码程序，判断其中 {   } 是否配对
+    FILE *f3 = fopen( "d:/t3.txt","rt" );
+    if ( !f3 ) cout<<"open file fails.";
+    i = 0;
+    for( ;!feof(f3); ){
+        cc = 0; 
+        fscanf( f3,"%c",&cc );
+        if ( cc=='{' ) i++;
+        if ( cc=='}' ) i--;
+    }
+    fclose(f3);
+    if ( i==0 ) cout<<"配对";
+    else cout<<"不配对";
+
+    
+    //4. 设计控制点结构体
+    XYZ pts[15];
+    // 输入数据
+    cout<<"please input xyz[15]:";
+    for( i=0;i<15;i++ ){
+        cin>>pts[i].name>>pts[i].x>>pts[i].y>>pts[i].z;
+    }
+    // 写入文件
+    FILE *f4 = fopen( "d:/t4.txt","wt" );
+    if ( !f4 ) cout<<"open file fails.";
+    fprintf( f4,"%d\n",15 );
+    for( i=0;i<15;i++ ){
+        fprintf( f4,"%s %f %f %f\n",pts[i].name,pts[i].x,pts[i].y,pts[i].z );
+    }
+    fclose(f4);
+
+    // 从文件读入数据
+    FILE *f5 = fopen( "d:/t4.txt","rt" );
+    if ( !f5 ) cout<<"open file fails.";
+    fscanf( f5,"%d",&n ); // 读入点数 n 
+    for( i=0;i<n;i++ ){
+        fscanf( f5,"%s%f%f%f",pts[i].name,&pts[i].x,&pts[i].y,&pts[i].z );
+    }
+    fclose(f5);
+
+    
+    float x,y;
+    cout<<"please input xy:";
+    cin>>x>>y;
+
+    // 调用函数
+    XYZ ret = GetNearest( pts,n,x,y ); 
+    
+    cout<<"The nearest XYZ is:\n";
+    cout<<ret.name<<"\n";
+    cout<<ret.x<<"\n";
+    cout<<ret.y<<"\n";
+    cout<<ret.z<<"\n";
+
+}

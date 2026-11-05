@@ -1,0 +1,115 @@
+
+#include "stdafx.h"
+#include "iostream"
+#include "math.h"
+
+using namespace std;
+
+// 7个练习的参考代码
+int main()
+{
+    int i,j,k,mxv,miv,rm,nv,a[5]; 
+    float avg,rms;
+    cout<< "please input 5 int:";
+    for( i=0;i<5;i++ ){
+        cin>>a[i];
+    }
+
+    //1. 求最大值输出
+    mxv = a[0];
+    for( i=0;i<5;i++ ){
+        if (mxv<a[i]) mxv = a[i];
+    }
+    cout<<"The max value: "<< mxv <<"\n";
+
+    //2. 求平均值,输出
+    cout<<"求平均值\n";
+    avg = 0;
+    for( i=0;i<5;i++ ){
+        avg += a[i];
+    }
+    cout<<"Tha average is:" << avg/5.0 <<"\n";
+
+    // 3.将数组反向，输出结果
+    cout<<"数组反向为\n";
+    for( i=0;i<5/2;i++ ){
+        k = a[i];
+        a[i]=a[5-1-i];        
+        a[5-1-i] = k;
+    }
+    for( i=0;i<5;i++ ){
+        cout<<a[i]<<" ";
+    }
+    cout<<"\n";
+
+    //4. 求方差，输出
+    cout<<"求方差\n";
+    avg = 0; // 先求平均
+    for(i=0;i<5;i++ ){
+        avg+=a[i];
+    }
+    avg = avg/5;
+    rms = 0; // 求平方和
+    for(i=0;i<5;i++ ){
+        rms += (a[i]-avg)*(a[i]-avg);
+    }
+    cout<<"数组方差为: "<< sqrt(rms)/5.0 << "\n";
+
+    //5. 求梯度，输出
+    cout<<"求梯度\n";
+    cout<<"数组梯度为：";
+    for(i=0;i<5;i++ ){
+        if ( i==0 ) cout<<a[i]<<" ";
+        else cout<<a[i]-a[i-1]<<" ";
+    }
+    cout<<"\n";
+    
+    // 6. 删除数据
+    cout<<"删除数据\n";
+    cout<<"current array is: ";
+    for( i=0;i<5;i++ ){
+        cout<<a[i]<<" ";
+    }
+    cout<<"\nPlease input remove value:";
+    cin>>rm;
+    for(i=0;i<5;i++ ){
+        if ( a[i]==rm ){ // 找到要删除的数据
+            for( j=i;j<5;j++ ){
+                a[j]=a[j+1];
+            }
+            cout<<"剩下的数组为：";
+            for( j=0;j<4;j++ ){
+                cout<<a[j]<<" ";
+            }
+        }
+    }
+    cout<<"\n";
+    
+    // 7. 按从大到小顺序输入数据
+    cout<<"按从大到小顺序摆放数据\n";
+    for( i=0;i<5;i++ ){
+        cout<<"please input new data:";
+        cin>>nv;
+        for( j=0;j<i;j++ ){
+            if ( nv>a[j] ){ // 找到插入的位置
+                for( k=i;k>j;k-- ){
+                    a[k]=a[k-1];
+                }
+
+                a[j]=nv;
+                break;
+            }
+        }
+        if (j==i){ // 如果没有找到合适位置，放最后
+            a[i]=nv;
+        }
+        cout<<"current array is : ";
+        for(j=0;j<i+1;j++ ){
+            cout<<a[j]<<" ";
+        }
+        cout<<"\n";
+    }
+
+    int tt; cin>>tt;
+    return 0;
+}
